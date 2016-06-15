@@ -13,6 +13,7 @@ type Response struct {
 	version   string
 	intents   []string
 	sentences []*Sentence
+	language  string
 	timestamp string
 }
 
@@ -28,6 +29,7 @@ func newResponse(jsonString string) (*Response, error) {
 	r.source = resultsMap["source"].(string)
 	r.version = resultsMap["version"].(string)
 	r.timestamp = resultsMap["timestamp"].(string)
+	r.language = resultsMap["language"].(string)
 	r.intents = make([]string, len(resultsMap["intents"].([]interface{})))
 	for i, intent := range resultsMap["intents"].([]interface{}) {
 		r.intents[i] = intent.(string)
@@ -37,6 +39,11 @@ func newResponse(jsonString string) (*Response, error) {
 		r.sentences[i] = newSentence(sentence.(map[string]interface{}))
 	}
 	return r, nil
+}
+
+// Language returns the language of the processed text
+func (r *Response) Language() string {
+	return r.language
 }
 
 // Status returns the status of the request
