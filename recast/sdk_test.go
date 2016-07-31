@@ -1,14 +1,29 @@
 package recast
 
 import (
+	"flag"
+	"fmt"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
 
+var fakeAPIKey = "fakeAPIKey"
+var realAPIKey string
+
+func init() {
+	flag.StringVar(&realAPIKey, "apikey", "", "Recat.ai request access key")
+	flag.Parse()
+	if realAPIKey == "" {
+		fmt.Println("Please provide argument -apikey 'Recat.ai request access key'")
+		os.Exit(1)
+	}
+}
+
 func TestClient(t *testing.T) {
 	//Basic test
-	c := NewClient("0496a4db6a50b7ec02e4ce101d3f8613", "en")
+	c := NewClient(realAPIKey, "en")
 	require.True(t, c != nil)
 	r, err := c.TextRequest("Hello !", nil)
 	require.True(t, err == nil)
@@ -30,16 +45,16 @@ func TestClient(t *testing.T) {
 	require.True(t, err != nil)
 
 	//Test invalid token
-	c = &Client{token: "foobar"}
+	c = &Client{token: fakeAPIKey}
 	require.True(t, c != nil)
 	r, err = c.TextRequest("Hello !", nil)
 	require.True(t, err != nil)
-	c.SetToken("0496a4db6a50b7ec02e4ce101d3f8613")
+	c.SetToken(realAPIKey)
 	r, err = c.TextRequest("Hello!", nil)
 	require.True(t, err == nil)
 	require.True(t, r != nil)
 
-	c = &Client{token: "0496a4db6a50b7ec02e4ce101d3f8613", language: "en"}
+	c = &Client{token: realAPIKey, language: "en"}
 	require.True(t, c != nil)
 	_, err = c.FileRequest("./test/test.wav", nil)
 	require.True(t, err == nil)
@@ -50,7 +65,7 @@ func TestClient(t *testing.T) {
 }
 
 func TestOpts(t *testing.T) {
-	c := &Client{token: "0496a4db6a50b7ec02e4ce101d3f8613"}
+	c := &Client{token: realAPIKey}
 	require.True(t, c != nil)
 	_, err := c.TextRequest("I go from Paris to London.", map[string]string{
 		"language": "foo",
@@ -68,10 +83,10 @@ func TestOpts(t *testing.T) {
 }
 
 func TestSentences(t *testing.T) {
-	c := &Client{token: "0496a4db6a50b7ec02e4ce101d3f8613"}
+	c := &Client{token: realAPIKey}
 	require.True(t, c != nil)
 	r, err := c.TextRequest("I go from Paris to London.", map[string]string{
-		"token":    "c271ef3e774f72315ce6856f3bfc5876",
+		"token":    realAPIKey,
 		"language": "en",
 	})
 	require.True(t, err == nil)
@@ -114,7 +129,7 @@ func TestSentences(t *testing.T) {
 }
 
 func TestResponseEntities(t *testing.T) {
-	c := &Client{token: "0496a4db6a50b7ec02e4ce101d3f8613"}
+	c := &Client{token: realAPIKey}
 	require.True(t, c != nil)
 	r, err := c.TextRequest("I go from Paris to London.", nil)
 	require.True(t, err == nil)
@@ -133,7 +148,7 @@ func TestResponseEntities(t *testing.T) {
 }
 
 func TestMoar(t *testing.T) {
-	c := &Client{token: "0496a4db6a50b7ec02e4ce101d3f8613"}
+	c := &Client{token: realAPIKey}
 	require.True(t, c != nil)
 	r, err := c.TextRequest("I go from Paris to London.", nil)
 	require.True(t, err == nil)
@@ -147,13 +162,13 @@ func TestMoar(t *testing.T) {
 }
 
 func TestFileUpload(t *testing.T) {
-	c := &Client{token: "0496a4db6a50b7ec02e4ce101d3f8613"}
+	c := &Client{token: realAPIKey}
 	require.True(t, c != nil)
 	r, err := c.FileRequest("foobar.wav", nil)
 	require.True(t, err != nil)
 	require.True(t, r == nil)
 	r, err = c.FileRequest("./test/invalid.wav", map[string]string{
-		"token":    "0496a4db6a50b7ec02e4ce101d3f8613",
+		"token":    realAPIKey,
 		"language": "en",
 	})
 	require.True(t, err == nil)
