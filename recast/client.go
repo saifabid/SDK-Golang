@@ -37,7 +37,7 @@ func (c *Client) SetToken(token string) {
 
 // SetLanguage sets the language used for the requests
 func (c *Client) SetLanguage(language string) {
-
+	c.language = language
 }
 
 // TextRequest process a text request to Recast.AI API and returns a Response
